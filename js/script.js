@@ -1,8 +1,11 @@
 async function llamadaAPIprincipal(){
     let response = await fetch("https://www.themealdb.com/api/json/v1/1/filter.php?c=Pasta")
     let data = await response.json()
-    mostrarRecetas(data)
 
+    window.recetasData = data
+
+    mostrarRecetas(data)
+    await configurarBuscador()
 }
 
 function mostrarRecetas(data){
@@ -62,3 +65,24 @@ async function infoDetallada(idReceta) {
     document.getElementById("ingrediente13").textContent = (datos.strIngredient13 + ": " + datos.strMeasure13);
     
 };
+
+async function configurarBuscador() {
+    const buscador1 = document.getElementById("buscador");
+    
+
+    buscador1.addEventListener('input', async function() {
+        const buscador = this.value;
+        console.log(window.recetasData)
+        
+        if (buscador === ""){
+            mostrarRecetas(window.recetasData)
+        }
+        
+        // Filtrar usuarios
+        let response = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${buscador}`)
+        let recetaFiltrada = await response.json()
+        
+        // resultados filtrados
+        mostrarRecetas(recetaFiltrada);
+    });
+}
